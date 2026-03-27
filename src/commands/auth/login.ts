@@ -8,7 +8,7 @@ const BASE_URL = 'https://app.emailguard.io';
 export function registerLoginCommand(program: Command): void {
   program
     .command('login')
-    .description('Authenticate with EmailGuard using email + password (saves token to config). Alternatively set EMAILGUARD_API_KEY to use a pre-generated API token from your dashboard.')
+    .description('Authenticate with EmailGuard using email + password (saves token to ~/.emailguard-cli/config.json). Alternatively set EMAILGUARD_API_KEY to use a pre-generated API token from your dashboard.')
     .option('--email <email>', 'EmailGuard account email (skips interactive prompt)')
     .option('--password <password>', 'EmailGuard account password (skips interactive prompt)')
     .option('--api-key <key>', 'Use a pre-generated API token directly (from dashboard → Developer API)')

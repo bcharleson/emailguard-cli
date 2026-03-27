@@ -12,7 +12,7 @@ const BASE_URL = 'https://app.emailguard.io';
 const MAX_RETRIES = 3;
 const REQUEST_TIMEOUT = 30_000;
 const WRITE_TIMEOUT = 15_000;
-const VERSION = '0.1.0';
+const VERSION = '0.1.1';
 
 interface ClientOptions {
   apiKey: string;
@@ -163,6 +163,44 @@ export class EmailGuardClient implements IEmailGuardClient {
 
   async post<T>(path: string, body?: unknown, query?: Record<string, any>): Promise<T> {
     return this.request<T>({ method: 'POST', path, query, body });
+  }
+
+  async postFormData<T>(path: string, formData: FormData): Promise<T> {
+    const url = new URL(this.baseUrl + path);
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), this.timeout);
+    try {
+      const response = await fetch(url.toString(), {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${this.apiKey}`,
+          Accept: 'application/json',
+          'User-Agent': `emailguard-cli/${VERSION}`,
+        },
+        body: formData,
+        signal: controller.signal,
+      });
+      clearTimeout(timeoutId);
+      if (response.ok) {
+        const text = await response.text();
+        if (!text) return undefined as T;
+        return JSON.parse(text) as T;
+      }
+      const errorBody = await response.text().catch(() => '');
+      let errorMessage: string;
+      try {
+        const parsed = JSON.parse(errorBody);
+        errorMessage = parsed.message || parsed.error || errorBody;
+      } catch {
+        errorMessage = errorBody || response.statusText;
+      }
+      if (response.status === 401 || response.status === 403) throw new AuthError(errorMessage);
+      if (response.status === 404) throw new NotFoundError(errorMessage);
+      if (response.status === 400 || response.status === 422) throw new ValidationError(errorMessage);
+      throw new EmailGuardError(errorMessage, 'API_ERROR', response.status);
+    } finally {
+      clearTimeout(timeoutId);
+    }
   }
 
   async patch<T>(path: string, body?: unknown): Promise<T> {

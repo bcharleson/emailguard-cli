@@ -47,9 +47,11 @@ export const allDnsCommands: CommandDefinition[] = [
     name: 'dns_spf_raw',
     group: 'dns',
     subcommand: 'spf-raw',
-    description: 'Generate a raw SPF record with full control over parameters',
+    description: 'Generate a raw SPF record with full parameter control. Use --tag and --value together to add a single SPF mechanism (e.g., --tag ip4 --value 1.2.3.4). Use --failure-policy to set the qualifier (~all, -all, ?all, +all). For provider-based generation prefer spf-wizard.',
     examples: [
       'emailguard dns spf-raw --failure-policy ~all',
+      'emailguard dns spf-raw --tag ip4 --value 203.0.113.0/24 --failure-policy -all',
+      'emailguard dns spf-raw --tag include --value sendgrid.net --failure-policy ~all',
     ],
     inputSchema: z.object({
       redirect: z.string().optional(),
@@ -146,7 +148,7 @@ export const allDnsCommands: CommandDefinition[] = [
     name: 'dns_dmarc_connected',
     group: 'dns',
     subcommand: 'dmarc-connected',
-    description: 'Generate a DMARC record for a domain connected in EmailGuard',
+    description: 'Generate a DMARC record for a domain already added to your EmailGuard workspace (requires --domain-uuid). For domains not in EmailGuard, use dmarc-external instead.',
     examples: [
       'emailguard dns dmarc-connected --domain-uuid abc-123 --policy quarantine',
     ],
@@ -170,7 +172,7 @@ export const allDnsCommands: CommandDefinition[] = [
     name: 'dns_dmarc_external',
     group: 'dns',
     subcommand: 'dmarc-external',
-    description: 'Generate a DMARC record for any external domain',
+    description: 'Generate a DMARC record for any domain by name (not required to be in EmailGuard). For domains already added to your workspace, use dmarc-connected instead.',
     examples: [
       'emailguard dns dmarc-external --domain example.com --policy quarantine --rua mailto:dmarc@example.com',
     ],

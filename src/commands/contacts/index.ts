@@ -1,4 +1,6 @@
 import { z } from 'zod';
+import { readFileSync } from 'fs';
+import { basename } from 'path';
 import type { CommandDefinition } from '../../core/types.js';
 
 export const allContactsCommands: CommandDefinition[] = [
@@ -31,12 +33,26 @@ export const allContactsCommands: CommandDefinition[] = [
     name: 'contacts_upload',
     group: 'contacts',
     subcommand: 'upload',
-    description: 'Upload a contact list for email verification (multipart form data — use the dashboard for file uploads; this initiates a verification job)',
-    examples: ['emailguard contacts upload'],
-    inputSchema: z.object({}),
-    cliMappings: {},
-    handler: async (_input, client) =>
-      client.post('/api/v1/contact-verification'),
+    description: 'Upload a CSV file of email addresses for verification. The file should have one email per row (with or without a header).',
+    examples: [
+      'emailguard contacts upload --file contacts.csv',
+      'emailguard contacts upload --file /path/to/emails.csv --pretty',
+    ],
+    inputSchema: z.object({
+      file: z.string().min(1),
+    }),
+    cliMappings: {
+      options: [
+        { field: 'file', flags: '--file <path>', description: 'Path to CSV file to upload (one email per row)' },
+      ],
+    },
+    handler: async (input, client) => {
+      const fileBuffer = readFileSync(input.file);
+      const blob = new Blob([fileBuffer], { type: 'text/csv' });
+      const formData = new FormData();
+      formData.append('contacts', blob, basename(input.file));
+      return client.postFormData('/api/v1/contact-verification', formData);
+    },
   },
   {
     name: 'contacts_download',

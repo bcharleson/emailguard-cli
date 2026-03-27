@@ -49,6 +49,7 @@ export interface EmailGuardClient {
 
   get<T>(path: string, query?: Record<string, any>): Promise<T>;
   post<T>(path: string, body?: unknown, query?: Record<string, any>): Promise<T>;
+  postFormData<T>(path: string, formData: FormData): Promise<T>;
   patch<T>(path: string, body?: unknown): Promise<T>;
   delete<T>(path: string): Promise<T>;
   put<T>(path: string, body?: unknown): Promise<T>;
@@ -61,6 +62,7 @@ export interface EmailGuardConfig {
 
 export interface GlobalOptions {
   apiKey?: string;
+  baseUrl?: string;
   output?: 'json' | 'pretty';
   quiet?: boolean;
   fields?: string;

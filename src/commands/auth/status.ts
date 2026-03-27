@@ -31,6 +31,7 @@ export function registerStatusCommand(program: Command): void {
           } else {
             output(result, globalOpts);
           }
+          process.exitCode = 1;
           return;
         }
 

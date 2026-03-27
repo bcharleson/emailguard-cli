@@ -112,8 +112,9 @@ function registerCommand(parent: Command, cmdDef: CommandDefinition): void {
   }
 
   cmd.action(async (...actionArgs: any[]) => {
+    // Capture opts before any async work so the catch block always has them
+    const globalOpts = cmd.optsWithGlobals() as GlobalOptions & Record<string, any>;
     try {
-      const globalOpts = cmd.optsWithGlobals() as GlobalOptions & Record<string, any>;
 
       // --pretty shorthand for --output pretty
       if (globalOpts.pretty) {
@@ -122,7 +123,7 @@ function registerCommand(parent: Command, cmdDef: CommandDefinition): void {
 
       // Resolve API key and build client
       const apiKey = await resolveApiKey(globalOpts.apiKey);
-      const client = new EmailGuardClient({ apiKey });
+      const client = new EmailGuardClient({ apiKey, baseUrl: globalOpts.baseUrl });
 
       // Build input from positional args + options
       const input: Record<string, any> = {};
@@ -172,7 +173,6 @@ function registerCommand(parent: Command, cmdDef: CommandDefinition): void {
       const result = await cmdDef.handler(parsed.data, client);
       output(result, globalOpts);
     } catch (error) {
-      const globalOpts = cmd.optsWithGlobals() as GlobalOptions;
       outputError(error, globalOpts);
     }
   });

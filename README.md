@@ -16,6 +16,13 @@ CLI and MCP server for [EmailGuard](https://emailguard.io) — email deliverabil
 npm install -g emailguard-cli
 ```
 
+> **Permission error?** If you get `EACCES`, either run with `sudo` or configure a user-writable npm prefix:
+> ```bash
+> mkdir -p ~/.npm-global && npm config set prefix ~/.npm-global
+> export PATH="$HOME/.npm-global/bin:$PATH"   # add to ~/.zshrc or ~/.bashrc
+> npm install -g emailguard-cli
+> ```
+
 ## Authentication
 
 Get your API token from **https://app.emailguard.io/api-settings** → Developer API → Add New API Token.
