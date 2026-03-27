@@ -16,9 +16,13 @@ export function registerLoginCommand(program: Command): void {
       const globalOpts = program.opts() as GlobalOptions;
 
       try {
+        // --api-key may be consumed by the parent program (same option name defined on root).
+        // Fall back to the global opts so the value is never lost.
+        const resolvedApiKey: string | undefined = opts.apiKey ?? globalOpts.apiKey;
+
         // Fast path: pre-generated API token provided directly
-        if (opts.apiKey) {
-          await saveConfig({ api_key: opts.apiKey });
+        if (resolvedApiKey) {
+          await saveConfig({ api_key: resolvedApiKey });
           const result = { status: 'authenticated', token_source: 'api_key', config_path: getConfigPath() };
           if (process.stdin.isTTY) {
             console.log('API token saved to ~/.emailguard-cli/config.json');

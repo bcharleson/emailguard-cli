@@ -1,6 +1,6 @@
 {
   "name": "emailguard-cli",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "CLI and MCP server for EmailGuard — email deliverability, blacklist monitoring, inbox placement testing, and spam analysis",
   "type": "module",
   "bin": {

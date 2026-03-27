@@ -40,7 +40,7 @@ export const allDnsCommands: CommandDefinition[] = [
     },
     handler: async (input, client) =>
       client.post('/api/v1/email-authentication/spf-generator-wizard', {
-        providers: input.providers,
+        providers: input.providers.split(',').map((p: string) => p.trim()).filter(Boolean),
       }),
   },
   {
@@ -71,8 +71,9 @@ export const allDnsCommands: CommandDefinition[] = [
     },
     handler: async (input, client) =>
       client.post('/api/v1/email-authentication/spf-raw-generator', {
-        redirect: input.redirect,
-        redirect_url: input.redirect_url,
+        // API treats redirect as required — send empty string when not provided
+        redirect: input.redirect ?? '',
+        redirect_url: input.redirect_url ?? '',
         failure_policy: input.failure_policy,
         tag: input.tag,
         value: input.value,
