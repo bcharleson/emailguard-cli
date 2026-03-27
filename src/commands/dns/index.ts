@@ -72,7 +72,7 @@ export const allDnsCommands: CommandDefinition[] = [
     handler: async (input, client) =>
       client.post('/api/v1/email-authentication/spf-raw-generator', {
         redirect: input.redirect === true,
-        redirect_url: input.redirect_url ?? '',
+        redirect_url: input.redirect === true ? (input.redirect_url ?? '') : '',
         failure_policy: input.failure_policy,
         tag: input.tag,
         value: input.value,

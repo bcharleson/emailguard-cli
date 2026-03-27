@@ -6,7 +6,7 @@ const program = new Command();
 program
   .name('emailguard')
   .description('CLI and MCP server for EmailGuard — email deliverability, blacklist monitoring, inbox testing, and spam analysis')
-  .version('0.1.3')
+  .version('0.1.4')
   .option('--api-key <key>', 'API key (overrides EMAILGUARD_API_KEY env var and stored config)')
   .option('--base-url <url>', 'Override API base URL (default: https://app.emailguard.io)')
   .option('--output <format>', 'Output format: json (default) or pretty', 'json')
