@@ -54,7 +54,7 @@ export const allDnsCommands: CommandDefinition[] = [
       'emailguard dns spf-raw --tag include --value sendgrid.net --failure-policy ~all',
     ],
     inputSchema: z.object({
-      redirect: z.string().optional(),
+      redirect: z.boolean().optional(),
       redirect_url: z.string().optional(),
       failure_policy: z.string().optional(),
       tag: z.string().optional(),
@@ -62,17 +62,16 @@ export const allDnsCommands: CommandDefinition[] = [
     }),
     cliMappings: {
       options: [
-        { field: 'redirect', flags: '--redirect <redirect>', description: 'SPF redirect modifier' },
-        { field: 'redirect_url', flags: '--redirect-url <url>', description: 'Redirect URL' },
+        { field: 'redirect', flags: '--redirect', description: 'Enable SPF redirect modifier (boolean flag; pair with --redirect-url)' },
+        { field: 'redirect_url', flags: '--redirect-url <url>', description: 'Redirect target domain (used when --redirect is set)' },
         { field: 'failure_policy', flags: '--failure-policy <policy>', description: 'Failure policy (~all, -all, ?all, +all)' },
-        { field: 'tag', flags: '--tag <tag>', description: 'SPF mechanism tag' },
-        { field: 'value', flags: '--value <value>', description: 'SPF mechanism value' },
+        { field: 'tag', flags: '--tag <tag>', description: 'SPF mechanism tag (e.g., ip4, include, a, mx)' },
+        { field: 'value', flags: '--value <value>', description: 'SPF mechanism value (e.g., 203.0.113.0/24, sendgrid.net)' },
       ],
     },
     handler: async (input, client) =>
       client.post('/api/v1/email-authentication/spf-raw-generator', {
-        // API treats redirect as required — send empty string when not provided
-        redirect: input.redirect ?? '',
+        redirect: input.redirect === true,
         redirect_url: input.redirect_url ?? '',
         failure_policy: input.failure_policy,
         tag: input.tag,
